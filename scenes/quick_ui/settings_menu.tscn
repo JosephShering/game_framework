@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bjp0an5bbh1jq"]
+
+[node name="SettingsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Settings" type="BoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+vertical = true
+
+[node name="VideoLabel" type="Label" parent="Settings"]
+layout_mode = 2
+text = "Video"
+
+[node name="MenuButton" type="MenuButton" parent="Settings"]
+layout_mode = 2
+text = "Resolution: "
+
+[node name="AudioLabel" type="Label" parent="Settings"]
+layout_mode = 2
+text = "Audio"

@@ -1,0 +1,70 @@
+[gd_scene load_steps=4 format=3 uid="uid://dno1kb35kvrb4"]
+
+[ext_resource type="Script" uid="uid://d305ei603oyvi" path="res://addons/game_framework/scripts/ui/main_menu.gd" id="1_2emrq"]
+[ext_resource type="Script" uid="uid://bk4fphjs8eb48" path="res://addons/game_framework/scripts/ui/components/exit_button.gd" id="2_sn2l5"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_sn2l5"]
+font_size = 46
+font_color = Color(0.876624, 0.910437, 0.92734, 1)
+
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("host_game_button", "join_game_button", "settings_button")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2emrq")
+host_game_button = NodePath("CenterContainer/MenuOptions/HostGame")
+join_game_button = NodePath("CenterContainer/MenuOptions/JoinGame")
+settings_button = NodePath("CenterContainer/MenuOptions/Settings")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0597457, 0.0714917, 0.0810826, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MenuOptions" type="BoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+vertical = true
+
+[node name="GameTitle" type="Label" parent="CenterContainer/MenuOptions"]
+layout_mode = 2
+text = "Game Idea"
+label_settings = SubResource("LabelSettings_sn2l5")
+horizontal_alignment = 1
+
+[node name="HostGame" type="Button" parent="CenterContainer/MenuOptions"]
+layout_mode = 2
+text = "Host Game"
+flat = true
+
+[node name="JoinGame" type="Button" parent="CenterContainer/MenuOptions"]
+layout_mode = 2
+text = "Join Game"
+flat = true
+
+[node name="Settings" type="Button" parent="CenterContainer/MenuOptions"]
+layout_mode = 2
+text = "Settings"
+flat = true
+
+[node name="Exit" type="Button" parent="CenterContainer/MenuOptions"]
+layout_mode = 2
+text = "Exit"
+flat = true
+script = ExtResource("2_sn2l5")
