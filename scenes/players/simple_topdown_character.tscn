@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://byvxq6yw5ltqc"]
 
-[ext_resource type="Script" uid="uid://c4i43qrxk71dv" path="res://addons/game_framework/scripts/character_body_3d/simple_topdown_character.gd" id="1_8woum"]
+[ext_resource type="Script" uid="uid://cki82bl8dr1bd" path="res://addons/game_framework/scripts/character_body_3d/topdown_character.gd" id="1_8woum"]
 [ext_resource type="Script" uid="uid://ckst4bupemvuk" path="res://addons/game_framework/scripts/cameras/topdown_camera.gd" id="2_8woum"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ju3fa"]
@@ -14,15 +14,16 @@ height = 1.7
 [sub_resource type="BoxMesh" id="BoxMesh_ju3fa"]
 size = Vector3(0.485, 0.24, 0.405)
 
-[node name="SimpleTopdownCharacter" type="CharacterBody3D"]
+[node name="SimpleTopdownCharacter" type="CharacterBody3D" node_paths=PackedStringArray("sync")]
+collision_layer = 2
 script = ExtResource("1_8woum")
+sync = NodePath("")
 rotation_behavior = 2
-metadata/_custom_type_script = "uid://c4i43qrxk71dv"
+metadata/_custom_type_script = "uid://dt7fodxgc3fg7"
 
 [node name="TopdownCamera" type="Camera3D" parent="." node_paths=PackedStringArray("target")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.36744, 0)
 cull_mask = 1048573
-projection = 1
 size = 13.753
 script = ExtResource("2_8woum")
 starting_angle = -45.0

@@ -22,7 +22,9 @@ func _ready() -> void:
         unhovered.emit()
         hover_result = {}
     )
-
+    
+    input.ready(rotation)
+    
 func _input(event: InputEvent) -> void:
     input.process_input(event)
 
@@ -32,20 +34,30 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
     super.process_physics(delta)
     input.process_physics(delta)
-    move_dir = input.move
     
-    if _can_jump():
-        jump()
-    
-    if input.interact:
-        var collider := hover_result.get("collider", null)
-        if collider and collider.has_method("interact"):
-            collider.interact(self)
-    
-    camera.rotation.x = input.gimbal.get_pitch()
-    rotation.y = input.gimbal.get_yaw()
-    
+    _process_move_dir()
+    _process_jump()
+    _process_interaction()
+    _process_rotation()
+
     move_and_slide()
 
 func _can_jump() -> bool:
     return is_on_floor() and input.jump
+
+func _process_move_dir() -> void:
+    move_dir = input.move
+
+func _process_jump() -> void:
+    if _can_jump():
+        jump()
+
+func _process_interaction() -> void:
+    if input.interact:
+            var collider := hover_result.get("collider", null)
+            if collider and collider.has_method("interact"):
+                collider.interact(self)
+                
+func _process_rotation() -> void:
+    camera.rotation.x = input.gimbal.get_pitch()
+    rotation.y = input.gimbal.get_yaw()

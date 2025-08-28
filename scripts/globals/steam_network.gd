@@ -1,3 +1,4 @@
+class_name SteamNetwork
 extends Node
 
 signal lobby_created()
@@ -32,7 +33,7 @@ func open_friends_in_game_window() -> void:
     Steam.activateGameOverlay("players")
 
 func start_game() -> void:
-    print("Starting the game!")
+    pass
 
 func get_lobby_id() -> int:
     return _lobby_id

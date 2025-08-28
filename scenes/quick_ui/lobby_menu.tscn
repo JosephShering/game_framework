@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://c1noc7icb2sve"]
+
+[node name="LobbyMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StartMenu" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.952
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -48.0
+offset_top = -71.896
+offset_right = 48.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Start Game"

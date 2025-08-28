@@ -1,0 +1,64 @@
+[gd_scene load_steps=3 format=3 uid="uid://dixc6y8t14hiq"]
+
+[ext_resource type="Script" uid="uid://cn65okixlme6y" path="res://addons/game_framework/scripts/ui/join_with_string.gd" id="1_oea7s"]
+[ext_resource type="Script" uid="uid://cv0gobd74yukc" path="res://addons/game_framework/scripts/ui/components/quick_username.gd" id="2_oea7s"]
+
+[node name="JoinWithString" type="CenterContainer" node_paths=PackedStringArray("code_line_edit", "join_button", "back_button", "quick_username")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_oea7s")
+code_line_edit = NodePath("BoxContainer/BoxContainer2/ConnectionStringLineEdit")
+join_button = NodePath("BoxContainer/BoxContainer2/Join Game")
+back_button = NodePath("BoxContainer/BackButton")
+quick_username = NodePath("BoxContainer/BoxContainer/QuickUsername")
+
+[node name="BoxContainer" type="BoxContainer" parent="."]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+theme_override_constants/separation = 55
+vertical = true
+
+[node name="BackButton" type="Button" parent="BoxContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Back To Main Menu"
+flat = true
+
+[node name="BoxContainer" type="BoxContainer" parent="BoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+vertical = true
+
+[node name="Label" type="Label" parent="BoxContainer/BoxContainer"]
+layout_mode = 2
+text = "Display Name"
+
+[node name="QuickUsername" type="LineEdit" parent="BoxContainer/BoxContainer"]
+layout_mode = 2
+placeholder_text = "Username"
+script = ExtResource("2_oea7s")
+
+[node name="BoxContainer2" type="BoxContainer" parent="BoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+vertical = true
+
+[node name="Label" type="Label" parent="BoxContainer/BoxContainer2"]
+layout_mode = 2
+text = "Connection String"
+
+[node name="ConnectionStringLineEdit" type="LineEdit" parent="BoxContainer/BoxContainer2"]
+layout_mode = 2
+placeholder_text = "Paste Connection String Here"
+
+[node name="Join Game" type="Button" parent="BoxContainer/BoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 20
+text = "Join Game"
+flat = true

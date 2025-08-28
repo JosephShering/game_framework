@@ -15,5 +15,8 @@ func process_physics(delta: float) -> void:
     move = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_backward")
     _reset_move.call_deferred()
 
+func ready(initial_rotation: Vector3) -> void:
+    gimbal = gimbal.from_rotation(initial_rotation)
+
 func _reset_move() -> void:
     move = Vector2.ZERO

@@ -12,6 +12,7 @@ enum RotationBehavior {
 @export_group("Ground", "ground_")
 @export var ground_base_speed := 300.0
 @export var ground_acceleration := 200.0
+@export var ground_acceleration_multiplier_curve : Curve
 
 @export_group("Air", "air_")
 @export var air_base_speed := 200.0
@@ -22,9 +23,12 @@ enum RotationBehavior {
 @export var jump_to_peak := 0.4
 @export var jump_to_ground := 0.35
 
+@export_group("Rotation Behavior", "rotation_")
 @export var rotation_behavior : RotationBehavior = RotationBehavior.none
 @export var rotation_speed := 25.0
-@export var acceleration_multiplier_curve : Curve
+
+@export_group("Multiplayer", "multiplayer_")
+@export var multiplayer_synchronizer : MultiplayerSynchronizer
 
 var acceleration := 25.0
 var base_speed := 100.0
@@ -53,7 +57,75 @@ func fall(
     
     velocity.y -= ((2.0 * jump_height) / (time_to * time_to) * delta)
 
-func process_physics(delta: float) -> void:
+func _ready() -> void:
+    if is_multiplayer_authority():
+        _local_ready()
+    else:
+        _remote_ready()
+
+func _input(event: InputEvent) -> void:
+    if is_multiplayer_authority():
+        _local_input(event)
+    else:
+        _remote_input(event)
+
+func _unhandled_input(event: InputEvent) -> void:
+    if is_multiplayer_authority():
+        _local_unhanded_input(event)
+    else:
+        _remote_unhanded_input(event)
+
+func _physics_process(delta: float) -> void:
+    if is_multiplayer_authority():
+        _local_physics_process(delta)
+    else:
+        _remote_physics_process(delta)
+
+func _process(delta: float) -> void:
+    if is_multiplayer_authority():
+        _local_process(delta)
+    else:
+        _remote_process(delta)
+
+func is_on_ground() -> bool:
+    return is_on_floor()
+
+func _lerp_rotation(x: float, z: float, delta: float) -> void:
+    if Vector2(x, z).length() <= 0:
+        return
+    
+    var angle := atan2(-x, -z)
+    rotation.y = lerp_angle(
+        rotation.y,
+        angle,
+        Lerp.blend(rotation_speed, delta)
+    )
+
+func _remote_ready() -> void:
+    pass
+
+func _remote_input(event: InputEvent) -> void:
+    pass
+    
+func _remote_unhanded_input(event: InputEvent) -> void:
+    pass
+    
+func _remote_physics_process(delta: float) -> void:
+    pass
+    
+func _remote_process(delta: float) -> void:
+    pass
+
+func _local_ready() -> void:
+    pass
+
+func _local_input(event: InputEvent) -> void:
+    pass
+    
+func _local_unhanded_input(event: InputEvent) -> void:
+    pass
+    
+func _local_physics_process(delta: float) -> void:
     #region Smooth Rotation
     var camera := get_viewport().get_camera_3d()
     var _camera_move_dir := move_dir.rotated(
@@ -79,9 +151,9 @@ func process_physics(delta: float) -> void:
     var current_ground_velocity := Vector2(velocity.x, velocity.z) 
     
     var acceleration_multiplier := 1.0
-    if acceleration_multiplier_curve:
+    if ground_acceleration_multiplier_curve:
         var offset := current_ground_velocity.length() / max_ground_speed.length()
-        acceleration_multiplier = acceleration_multiplier_curve.sample_baked(offset)
+        acceleration_multiplier = ground_acceleration_multiplier_curve.sample_baked(offset)
     
     var tgv := current_ground_velocity.move_toward(
         _camera_move_dir * base_speed * delta,
@@ -104,16 +176,5 @@ func process_physics(delta: float) -> void:
     
     gimbal.tick(delta)
     
-func is_on_ground() -> bool:
-    return is_on_floor()
-
-func _lerp_rotation(x: float, z: float, delta: float) -> void:
-    if Vector2(x, z).length() <= 0:
-        return
-    
-    var angle := atan2(-x, -z)
-    rotation.y = lerp_angle(
-        rotation.y,
-        angle,
-        Lerp.blend(rotation_speed, delta)
-    )
+func _local_process(delta: float) -> void:
+    pass

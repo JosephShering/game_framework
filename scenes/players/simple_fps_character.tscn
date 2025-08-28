@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dg7lljvfcmn6f" path="res://addons/game_framework/scripts/character_body_3d/simple_fps_character.gd" id="1_oej7p"]
 [ext_resource type="Script" uid="uid://dpyrjlmafxsld" path="res://addons/game_framework/scripts/cameras/fps_camera.gd" id="2_1xwm0"]
-[ext_resource type="Texture2D" uid="uid://bg1rgcndk3v06" path="res://assets/textures/crosshair.png" id="3_55cgx"]
+[ext_resource type="Texture2D" uid="uid://bxdy7vvglp67q" path="res://assets/textures/crosshair.png" id="3_55cgx"]
 [ext_resource type="Script" uid="uid://b8q57ouk8hax8" path="res://addons/game_framework/scripts/ui/crosshair_gui.gd" id="4_wkimm"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u8vuu"]
@@ -19,20 +19,22 @@ size = Vector3(0.7, 0.21, 0.31)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g2els"]
 albedo_color = Color(0.473599, 0.124639, 0.200754, 1)
 
-[node name="Character" type="CharacterBody3D" groups=["players"]]
+[node name="Character" type="CharacterBody3D" node_paths=PackedStringArray("camera") groups=["players"]]
 collision_layer = 4
 collision_mask = 17
 floor_constant_speed = true
 floor_max_angle = 0.610865
 script = ExtResource("1_oej7p")
+camera = NodePath("FPSCamera")
 
-[node name="FPSCamera" type="Camera3D" parent="."]
+[node name="FPSCamera" type="Camera3D" parent="." node_paths=PackedStringArray("target")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.333, 0)
 cull_mask = 1048573
 current = true
 script = ExtResource("2_1xwm0")
 ray_collision_mask = 255
 ray_length = 2.0
+target = NodePath("..")
 metadata/_custom_type_script = "uid://dpyrjlmafxsld"
 
 [node name="CollisionShape" type="CollisionShape3D" parent="."]
@@ -72,11 +74,12 @@ layout_mode = 2
 texture = ExtResource("3_55cgx")
 stretch_mode = 3
 
-[node name="CrosshairInteractLabel" type="RichTextLabel" parent="CanvasLayer/CrosshairContainer"]
+[node name="CrosshairInteractLabel" type="RichTextLabel" parent="CanvasLayer/CrosshairContainer" node_paths=PackedStringArray("character")]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 1
 text = "Interact"
 horizontal_alignment = 1
 script = ExtResource("4_wkimm")
+character = NodePath("../../..")
 metadata/_custom_type_script = "uid://b8q57ouk8hax8"

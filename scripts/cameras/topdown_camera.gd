@@ -31,13 +31,11 @@ func _ready() -> void:
     outer = outer.translated(target.global_position)
     
     inner = inner.rotated_local(Vector3.RIGHT, deg_to_rad(starting_angle))
-    #offset = inner.translated_local(Vector3(0.0, 0.0, 0.0))
     
-    #spring_arm.spring_length = distance
-    #spring_arm.shape = SphereShape3D.new()
-    #spring_arm.shape.radius = 0.25
-    
-    #rotate_pitch(deg_to_rad(starting_angle))
+    if get_parent().is_multiplayer_authority():
+        current = true
+    else:
+        current = false
 
 func rotate_yaw(angle: float) -> void:
     outer = outer.rotated_local(Vector3.UP, angle)

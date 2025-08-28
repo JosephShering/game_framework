@@ -1,16 +1,20 @@
-class_name SimpleTopdownCharacter
+class_name TopdownCharacter
 extends SmoothCharacterBody
+
+@export var sync : MultiplayerSynchronizer
 
 var input := FPSPlayerInput.new()
 
-func _input(event: InputEvent) -> void:
+var _time := 0.0
+
+func _local_input(event: InputEvent) -> void:
     input.process_input(event)
 
-func _unhandled_input(event: InputEvent) -> void:
+func _local_unhandled_input(event: InputEvent) -> void:
     input.process_unhandled_input(event)
 
-func _physics_process(delta: float) -> void:
-    super.process_physics(delta)
+func _local_physics_process(delta: float) -> void:
+    super._local_physics_process(delta)
     input.process_physics(delta)
     move_dir = input.move
     
