@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://byvxq6yw5ltqc"]
+[gd_scene load_steps=8 format=3 uid="uid://byvxq6yw5ltqc"]
 
 [ext_resource type="Script" uid="uid://cki82bl8dr1bd" path="res://addons/game_framework/scripts/character_body_3d/topdown_character.gd" id="1_8woum"]
 [ext_resource type="Script" uid="uid://ckst4bupemvuk" path="res://addons/game_framework/scripts/cameras/topdown_camera.gd" id="2_8woum"]
+[ext_resource type="Script" uid="uid://d0187od2opfab" path="res://addons/game_framework/scripts/network/states/player_state.gd" id="3_k0ym3"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ju3fa"]
 radius = 0.4
@@ -14,20 +15,39 @@ height = 1.7
 [sub_resource type="BoxMesh" id="BoxMesh_ju3fa"]
 size = Vector3(0.485, 0.24, 0.405)
 
-[node name="SimpleTopdownCharacter" type="CharacterBody3D" node_paths=PackedStringArray("sync")]
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8woum"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:display_name")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:id")
+properties/3/spawn = true
+properties/3/replication_mode = 0
+
+[node name="SimpleTopdownCharacter" type="CharacterBody3D" node_paths=PackedStringArray("player_state", "camera")]
 collision_layer = 2
 script = ExtResource("1_8woum")
-sync = NodePath("")
+player_state = NodePath("PlayerState")
+ground_base_speed = 200.0
+ground_acceleration = 50.0
 rotation_behavior = 2
+camera = NodePath("TopdownCamera")
 metadata/_custom_type_script = "uid://dt7fodxgc3fg7"
 
 [node name="TopdownCamera" type="Camera3D" parent="." node_paths=PackedStringArray("target")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.36744, 0)
 cull_mask = 1048573
+fov = 88.0
 size = 13.753
 script = ExtResource("2_8woum")
-starting_angle = -45.0
+starting_angle = -51.0
 target = NodePath("../CameraAnchor")
+distance = 8.0
 metadata/_custom_type_script = "uid://ckst4bupemvuk"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -36,11 +56,21 @@ shape = SubResource("CapsuleShape3D_ju3fa")
 debug_fill = false
 
 [node name="Body" type="MeshInstance3D" parent="CollisionShape3D"]
+visible = false
 mesh = SubResource("CapsuleMesh_ju3fa")
 
 [node name="Face" type="MeshInstance3D" parent="CollisionShape3D/Body"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.481, -0.304)
+visible = false
 mesh = SubResource("BoxMesh_ju3fa")
 
 [node name="CameraAnchor" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.28514, 0)
+
+[node name="PlayerState" type="Node" parent="." node_paths=PackedStringArray("synchronizer")]
+script = ExtResource("3_k0ym3")
+synchronizer = NodePath("MultiplayerSynchronizer")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="PlayerState"]
+replication_interval = 0.04
+replication_config = SubResource("SceneReplicationConfig_8woum")

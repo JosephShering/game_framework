@@ -21,8 +21,16 @@ var outer := Transform3D.IDENTITY
 var inner := Transform3D.IDENTITY
 var offset := Transform3D()
 
-var spring_arm := SpringArm3D.new()
-var target_point := Node3D.new()
+func pick() -> Dictionary:
+    var mouse_position := get_viewport().get_mouse_position()
+    var distance := 50.0
+    var query := PhysicsRayQueryParameters3D.create(
+        global_position,
+        global_position + (-global_basis.z * distance)
+    )
+    
+    var result := get_world_3d().direct_space_state.intersect_ray(query)
+    return result
 
 func _ready() -> void:
     top_level = true
@@ -31,17 +39,15 @@ func _ready() -> void:
     outer = outer.translated(target.global_position)
     
     inner = inner.rotated_local(Vector3.RIGHT, deg_to_rad(starting_angle))
-    
-    if get_parent().is_multiplayer_authority():
-        current = true
-    else:
-        current = false
 
 func rotate_yaw(angle: float) -> void:
     outer = outer.rotated_local(Vector3.UP, angle)
     
 func rotate_pitch(angle: float) -> void:
     inner = inner.rotated_local(Vector3.RIGHT, angle)
+
+func zoom(amount: float) -> void:
+    pass
 
 func _physics_process(delta: float) -> void:
     outer.origin = target.global_position
@@ -57,6 +63,7 @@ func _physics_process(delta: float) -> void:
     
     if result != {}:
         position = result["position"]
+    else:
+        position = _ct.origin
     
-    transform = _ct
-    
+    basis = _ct.basis

@@ -2,7 +2,7 @@ extends Node
 
 ## These values needs to be human readable
 
-@export var mouse_sensitivity := 0.5
+@export var mouse_sensitivity := 1.0
 @export var camera_fov := 88
 
 @export_group("Graphics")

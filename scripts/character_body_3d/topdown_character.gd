@@ -1,27 +1,28 @@
 class_name TopdownCharacter
 extends SmoothCharacterBody
 
-@export var sync : MultiplayerSynchronizer
-
-var input := FPSPlayerInput.new()
-
-var _time := 0.0
-
-func _local_input(event: InputEvent) -> void:
-    input.process_input(event)
-
-func _local_unhandled_input(event: InputEvent) -> void:
-    input.process_unhandled_input(event)
+@export var player_state : PlayerState
 
 func _local_physics_process(delta: float) -> void:
     super._local_physics_process(delta)
-    input.process_physics(delta)
-    move_dir = input.move
     
     if _can_jump():
         jump()
     
     move_and_slide()
+    
+    player_state.position = position
+    player_state.rotation = rotation
+    player_state.display_name = name
+    player_state.id = int(name)
 
+func _remote_physics_process(delta: float) -> void:
+    var idiff := Time.get_ticks_msec() - player_state.timestamp
+    var diff := float(idiff) / 1000.0
+    var weight := min(1.0, diff / 0.1)
+    
+    position = position.lerp(player_state.position, weight)
+    rotation = rotation.slerp(player_state.rotation, weight)
+    
 func _can_jump():
-    return is_on_floor() and input.jump
+    return false

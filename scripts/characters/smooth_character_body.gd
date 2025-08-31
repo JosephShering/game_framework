@@ -27,11 +27,12 @@ enum RotationBehavior {
 @export var rotation_behavior : RotationBehavior = RotationBehavior.none
 @export var rotation_speed := 25.0
 
-@export_group("Multiplayer", "multiplayer_")
-@export var multiplayer_synchronizer : MultiplayerSynchronizer
+@export var camera : TopdownCamera
 
-var acceleration := 25.0
-var base_speed := 100.0
+var id : int
+
+var acceleration := 20.0
+var base_speed := 90.0
 var move_dir := Vector2.ZERO
 var _world_move_dir := Vector2.ZERO
 var look_dir := Vector2.ZERO
@@ -58,9 +59,22 @@ func fall(
     velocity.y -= ((2.0 * jump_height) / (time_to * time_to) * delta)
 
 func _ready() -> void:
+    id = int(name)
+    set_multiplayer_authority(id)
+    
     if is_multiplayer_authority():
+        var spawn_point := get_tree().get_first_node_in_group("spawn_points")
+        if spawn_point:
+            global_position = spawn_point.global_position
+        
         _local_ready()
+        
+        if camera:
+            camera.current = true
     else:
+        if camera:
+            camera.free()
+        
         _remote_ready()
 
 func _input(event: InputEvent) -> void:

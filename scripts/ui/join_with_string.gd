@@ -12,6 +12,12 @@ signal cancel
 
 @export var quick_username : QuickUsername
 
+var is_loading := true:
+    set(_is_loading):
+        is_loading = _is_loading
+        join_button.disabled = _is_loading
+        back_button.disabled = _is_loading
+
 func _ready() -> void:
     join_button.disabled = true
     
