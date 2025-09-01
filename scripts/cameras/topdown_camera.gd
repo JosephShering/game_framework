@@ -21,15 +21,32 @@ var outer := Transform3D.IDENTITY
 var inner := Transform3D.IDENTITY
 var offset := Transform3D()
 
-func pick() -> Dictionary:
-    var mouse_position := get_viewport().get_mouse_position()
-    var distance := 50.0
-    var query := PhysicsRayQueryParameters3D.create(
-        global_position,
-        global_position + (-global_basis.z * distance)
-    )
+var input : PlayerInput
+
+var cursor_world_position := Vector3.ZERO
+
+#func pick(distance: float = 50.0) -> Dictionary:
+    #var mouse_position := get_viewport().get_mouse_position()
+    #var query := PhysicsRayQueryParameters3D.create(
+        #global_position,
+        #global_position + (-global_basis.z * distance)
+    #)
+    #
+    #var result := get_world_3d().direct_space_state.intersect_ray(query)
+    #return result
+
+func pick(distance: float = 50.0) -> Dictionary:
+    var screen_position := get_viewport().get_mouse_position()
+    var camera := get_viewport().get_camera_3d()
     
-    var result := get_world_3d().direct_space_state.intersect_ray(query)
+    var from := camera.project_ray_origin(screen_position)
+    var to := camera.project_ray_origin(screen_position) + camera.project_ray_normal(screen_position) * distance
+    var query := PhysicsRayQueryParameters3D.create(from, to)
+    var result := camera.get_world_3d().direct_space_state.intersect_ray(query)
+    
+    if result != {}:
+        cursor_world_position = result["position"]
+    
     return result
 
 func _ready() -> void:
@@ -37,7 +54,6 @@ func _ready() -> void:
     
     outer = outer.rotated_local(Vector3.UP, deg_to_rad(0.0))
     outer = outer.translated(target.global_position)
-    
     inner = inner.rotated_local(Vector3.RIGHT, deg_to_rad(starting_angle))
 
 func rotate_yaw(angle: float) -> void:
@@ -47,11 +63,16 @@ func rotate_pitch(angle: float) -> void:
     inner = inner.rotated_local(Vector3.RIGHT, angle)
 
 func zoom(amount: float) -> void:
-    pass
+    distance += amount
 
 func _physics_process(delta: float) -> void:
-    outer.origin = target.global_position
+    _lerp_to_target(delta)
+    _process_camera_collision()
+
+func _lerp_to_target(delta: float) -> void:
+    outer.origin = outer.origin.lerp(target.global_position, Lerp.blend(follow_power, delta))
     
+func _process_camera_collision() -> void:
     var _t := (outer * inner)
     var _ct := _t.translated_local(Vector3(0.0, 0.0, distance))
     
@@ -65,5 +86,5 @@ func _physics_process(delta: float) -> void:
         position = result["position"]
     else:
         position = _ct.origin
-    
+        
     basis = _ct.basis

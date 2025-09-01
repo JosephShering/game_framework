@@ -3,13 +3,10 @@ extends SmoothCharacterBody
 
 @export var player_state : PlayerState
 
+var _acc_delta := 0.0
+
 func _local_physics_process(delta: float) -> void:
     super._local_physics_process(delta)
-    
-    if _can_jump():
-        jump()
-    
-    move_and_slide()
     
     player_state.position = position
     player_state.rotation = rotation
@@ -21,8 +18,8 @@ func _remote_physics_process(delta: float) -> void:
     var diff := float(idiff) / 1000.0
     var weight := min(1.0, diff / 0.1)
     
-    position = position.lerp(player_state.position, weight)
+    position = position.lerp(
+        player_state.position,
+        weight
+    )
     rotation = rotation.slerp(player_state.rotation, weight)
-    
-func _can_jump():
-    return false

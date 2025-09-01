@@ -6,9 +6,10 @@ const MOUSE_SENSITIVITY := 0.005
 var mouse_look_input := Vector2.ZERO
 
 var gimbal := Gimbal.new()
+var initial_rotation := Vector3.ZERO
 
-func create(rotation: Vector3) -> void:
-    gimbal = Gimbal.from_rotation(rotation)
+func ready() -> void:
+    gimbal = gimbal.from_rotation(initial_rotation)
 
 func process_input(event: InputEvent) -> void:
     if event is InputEventMouseMotion:
@@ -16,13 +17,6 @@ func process_input(event: InputEvent) -> void:
         gimbal.rotate_outer_gimbal(mouse_look_input.x)
         gimbal.rotate_inner_gimbal(mouse_look_input.y)
 
-func process_unhandled_input(event: InputEvent) -> void:
-    pass
-    #if event is InputEventMouseMotion:
-        #mouse_look_input = -event.relative * MOUSE_SENSITIVITY * Settings.mouse_sensitivity
-        #gimbal.rotate_outer_gimbal(mouse_look_input.x)
-        #gimbal.rotate_inner_gimbal(mouse_look_input.y)
-    
 func process_physics(delta: float) -> void:
     gimbal.tick(delta)
     

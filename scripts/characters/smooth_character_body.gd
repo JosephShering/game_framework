@@ -1,6 +1,9 @@
 class_name SmoothCharacterBody
 extends CharacterBody3D
 
+signal launched
+signal landed
+
 enum RotationBehavior {
     none,
     with_velocity,
@@ -22,6 +25,7 @@ enum RotationBehavior {
 @export var jump_height := 1.0
 @export var jump_to_peak := 0.4
 @export var jump_to_ground := 0.35
+@export var jump_buffer_time := 0.15
 
 @export_group("Rotation Behavior", "rotation_")
 @export var rotation_behavior : RotationBehavior = RotationBehavior.none
@@ -40,8 +44,20 @@ var look_at := Vector3.ZERO
 
 var gimbal := Gimbal.new()
 
+var jump_pressed_at := 0
+
+var last_is_on_floor := false
+
 func jump(jump_height: float = jump_height, to_peak: float = jump_to_peak) -> void:
-    velocity.y = (2.0 * jump_height) / to_peak
+    if !is_on_floor() and velocity.y < 0.0:
+        jump_pressed_at = Time.get_ticks_msec()
+    
+    if _can_jump():
+        velocity.y = (2.0 * jump_height) / to_peak
+
+@rpc("reliable")
+func _jump() -> void:
+    jump()
 
 func fall(
     delta: float,
@@ -61,6 +77,8 @@ func fall(
 func _ready() -> void:
     id = int(name)
     set_multiplayer_authority(id)
+    
+    last_is_on_floor = is_on_floor()
     
     if is_multiplayer_authority():
         var spawn_point := get_tree().get_first_node_in_group("spawn_points")
@@ -90,6 +108,20 @@ func _unhandled_input(event: InputEvent) -> void:
         _remote_unhanded_input(event)
 
 func _physics_process(delta: float) -> void:
+    if !last_is_on_floor and is_on_floor():
+        var t := Time.get_ticks_msec()
+        var diff := float(t - jump_pressed_at) / 1000.0
+        
+        if diff < jump_buffer_time:
+            jump()
+        
+        landed.emit()
+    
+    if last_is_on_floor and !is_on_floor():
+        launched.emit()
+    
+    last_is_on_floor = is_on_floor()
+    
     if is_multiplayer_authority():
         _local_physics_process(delta)
     else:
@@ -141,10 +173,6 @@ func _local_unhanded_input(event: InputEvent) -> void:
     
 func _local_physics_process(delta: float) -> void:
     #region Smooth Rotation
-    var camera := get_viewport().get_camera_3d()
-    var _camera_move_dir := move_dir.rotated(
-        -camera.global_rotation.y
-    )
     
     match rotation_behavior:
         RotationBehavior.none:
@@ -153,11 +181,12 @@ func _local_physics_process(delta: float) -> void:
             var v := velocity.normalized()
             _lerp_rotation(v.x, v.z, delta)
         RotationBehavior.move_dir:
-            _lerp_rotation(_camera_move_dir.x, _camera_move_dir.y, delta)
+            _lerp_rotation(move_dir.x, move_dir.y, delta)
         RotationBehavior.look_dir:
             _lerp_rotation(look_dir.x, look_dir.y, delta)
         RotationBehavior.look_at:
-            _lerp_rotation(look_at.x, look_at.z, delta)
+            var dir := global_position.direction_to(Vector3(look_at.x, global_position.y, look_at.z))
+            _lerp_rotation(dir.x, dir.z, delta)
     #endregion
     
     #region Ground Movement
@@ -170,7 +199,7 @@ func _local_physics_process(delta: float) -> void:
         acceleration_multiplier = ground_acceleration_multiplier_curve.sample_baked(offset)
     
     var tgv := current_ground_velocity.move_toward(
-        _camera_move_dir * base_speed * delta,
+        move_dir * base_speed * delta,
         acceleration * acceleration_multiplier * delta
     )
     
@@ -188,7 +217,14 @@ func _local_physics_process(delta: float) -> void:
         fall(delta)
     #endregion
     
+    #region Buffered Jumping
+    
+    #endregion
+    
     gimbal.tick(delta)
     
 func _local_process(delta: float) -> void:
     pass
+
+func _can_jump() -> bool:
+    return is_on_floor()

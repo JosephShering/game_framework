@@ -54,9 +54,6 @@ func _physics_process(_delta: float) -> void:
             var node := scene.instantiate()
             _level_container.add_child(node)
             
-            if node is Level:
-                await node.loaded
-            
             status = Status.done
             loaded.emit(node)
             
