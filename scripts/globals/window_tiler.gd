@@ -16,19 +16,23 @@ var windows := {
 }
 
 func _ready() -> void:
-    if OS.has_feature("host"):
-        get_window().position = windows["host"]
+    #if OS.has_feature("host"):
+        #get_window().position = windows["host"]
+        #set_size()
         
     if OS.has_feature("client_1"):
         get_window().position = windows["client_1"]
+        set_size()
         
     if OS.has_feature("client_2"):
         get_window().position = windows["client_2"]
+        set_size()
         
     if OS.has_feature("client_3"):
         get_window().position = windows["client_3"]
+        set_size()
         
-    set_size()
+    
         
 func set_size() -> void:
     get_window().size = Vector2i(half_width, half_height)

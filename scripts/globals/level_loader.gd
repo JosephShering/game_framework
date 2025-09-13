@@ -13,7 +13,6 @@ enum Status {
 var status := Status.done
 var _path : String = ""
 
-var _level_container : Node3D
 var _loading_screen : Node
 
 var progress : Array[float]
@@ -21,10 +20,7 @@ var progress : Array[float]
 var loaded_peers := {}
 
 func _ready() -> void:
-    var level_container := get_tree().current_scene.get_node_or_null("/root/Main/Level")
-    _level_container = level_container
-    
-    var loading_screen := get_tree().current_scene.get_node_or_null("/root/Main/CanvasLayer/LoadingScreen")
+    var loading_screen := get_tree().current_scene.get_node_or_null("CanvasLayer/LoadingScreen")
     _loading_screen = loading_screen
 
 func change_level(path: String) -> void:
@@ -48,11 +44,12 @@ func _physics_process(_delta: float) -> void:
             status = Status.done
             var scene : PackedScene = ResourceLoader.load_threaded_get(_path)
             
-            for child in _level_container.get_children():
+            var game_mode := GameManager.get_game_mode()
+            for child in game_mode.get_spawn_node().get_children():
                 child.free()
                 
             var node := scene.instantiate()
-            _level_container.add_child(node)
+            game_mode.spawn(node)
             
             status = Status.done
             loaded.emit(node)

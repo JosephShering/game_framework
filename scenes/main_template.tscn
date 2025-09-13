@@ -1,6 +1,5 @@
-[gd_scene load_steps=5 format=3 uid="uid://bq3tmxv3ys6wj"]
+[gd_scene load_steps=4 format=3 uid="uid://bq3tmxv3ys6wj"]
 
-[ext_resource type="Script" uid="uid://cwuurxkoaorus" path="res://addons/game_framework/scripts/network/level_spawn_watcher.gd" id="1_wpf02"]
 [ext_resource type="PackedScene" uid="uid://06wnaygdiu6a" path="res://addons/game_framework/scenes/quick_ui/basic_loading_screen.tscn" id="2_g3s21"]
 [ext_resource type="PackedScene" uid="uid://vg8hnw4f1pq3" path="res://levels/main_menu.tscn" id="3_v0seh"]
 
@@ -12,7 +11,6 @@
 _spawnable_scenes = PackedStringArray("uid://o7ktfn0la816", "uid://iduoujl6hfey")
 spawn_path = NodePath("../Level")
 spawn_limit = 1
-script = ExtResource("1_wpf02")
 
 [node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("uid://byvxq6yw5ltqc")

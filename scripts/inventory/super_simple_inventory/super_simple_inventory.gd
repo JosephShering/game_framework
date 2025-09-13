@@ -1,7 +1,7 @@
 class_name SuperSimpleInventory
 extends Resource
 
-var items : Dictionary[BaseInventoryItem, int] = {}
+var items : Dictionary[Variant, int] = {}
 
 func add(item, amount = 1) -> void:
     if items.has(item):
